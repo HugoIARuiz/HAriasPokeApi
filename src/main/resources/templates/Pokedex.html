@@ -1,0 +1,36 @@
+
+<html xmlns:th="http://www.thyemleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+    <head>
+        <title>Detail</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+    </head>
+    <body layout:fragment="body">
+<div class="row justify-content-center d-flex gap-3 mt-5">
+            <h1 class="text-center">Most popular</h1>
+            <div th:each="pokemon : ${listPokemon}" class="card mb-3" style="max-width: 450px;">
+
+                <div class="row g-0">
+                    <div class="col-md-4">
+                     
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${pokemon.id}"></h5>
+                            <h5 class="card-title" th:text="${pokemon.name}"></h5>
+                            <h5 class="card-title" th:text="${pokemon.Types.name}"</h5>
+                            
+                            
+                            
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </body>
+</html>

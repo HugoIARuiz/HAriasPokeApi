@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html xmlns:th="http://www.thyemleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+    <head>
+        <title>Pokemon</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="./css/main.css">
+        <style>
+            .favorite-btn {
+                border: none;
+                background: none;
+                color: #6c757d;
+                font-size: 1.2rem;
+                transition: color 0.3s;
+                float: right;
+            }
+            .favorite-btn:hover, .favorite-btn.active {
+                color: #dc3545;
+            }
+            .stats-chart {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .bar {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .progress-container {
+                width: 100%;
+                background-color: #ddd;
+                border-radius: 5px;
+                overflow: hidden;
+                height: 25px;
+            }
+            .progress-bar {
+                height: 100%;
+                text-align: center;
+                font-weight: bold;
+                background-color: #3498db;
+                border-radius: 5px;
+            }
+        </style>
+    </head>
+    <body layout:fragment="body">
+        <div class="container mt-5 justify-content-center align-items-center ">
+            <h1 class="text-capitalize mt-3 fw-bold" th:text="${pokemon.name}+  ' No.'+${pokemon.id}">Nombre</h1>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card border-primary">
+                        <div class="text-center p-4">
+                            <div>
+                                <audio id="sonido" th:src="${pokemon.Cries.latest}" style="display: none;"></audio>
+                                <button onclick="playAudio()" class="favorite-btn" ><i class="bi bi-soundwave"></i>
+                                </button >
+                            </div>
+                            <img th:src="${pokemon.sprites.front_default}" alt="Imagen de Pokémon" class="img-fluid" style="height: 180px; object-fit: contain;">
+                            <div class="row">
+                                <div class="btn-group rounded-pill col-3 mt-1" role="group" aria-label="Basic mixed styles example" th:each="pokemonType : ${pokemon.types}">
+                                    <span class="badge" style="background: #d9071f;
+
+                                          background: linear-gradient(180deg, rgba(217, 7, 31, 1) 19%, rgba(72, 184, 92, 1) 53%, rgba(51, 24, 8, 1) 100%);" th:text="${pokemonType.type.name}">Secondary</span>                            
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-primary">
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-4 text-center d-flex flex-column align-items-center">
+                                    <h3 >Altura <i class="bi bi-rulers"></i></h3>
+                                    <h3 class="text-capitalize mt-3 fw-bold" th:text="${#numbers.formatDecimal(pokemon.height/10, 1, 1)} + 'm'"></h3>
+                                </div>
+                                <div class="col-md-4 text-center d-flex flex-column align-items-center">
+                                    <h3 >Peso <i class="bi bi-feather"></i></h3>
+                                    <h3 class="text-capitalize mt-3 fw-bold" th:text="${#numbers.formatDecimal(pokemon.weight/10, 1, 1)} + 'kg'"></h3>
+                                </div>
+                                <div class="col-md-4 text-center d-flex flex-column align-items-center">
+                                    <h3 >Experiencia</h3>
+                                    <h3 class="text-capitalize mt-3 fw-bold" th:text="${pokemon.base_experience} + 'XP'"></h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-primary">
+                        <div class="card-body">
+                            <div class="stats-chart">
+                                <div class="bar" th:each="stats : ${pokemon.stats}">
+                                    <h6 class="stat-name" th:text="${stats.stat.name}">Stat</h6>
+                                    <div class="progress-container">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                             th:style="'width:' + (${stats.base_stat} / 200 * 100) + '%;'"
+                                             th:text="${stats.base_stat}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function playAudio() {
+            var audio = document.getElementById('sonido');
+            if (audio.paused) {
+                audio.play();
+            } else {
+                audio.pause();
+            }
+        }
+    </script>
+</body>
+</html>

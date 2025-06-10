@@ -6,25 +6,36 @@
         <title>Detail</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        
+        <style>
+            .pokemon-id-back {
+                position: absolute;
+                top: 1rem;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: 6rem;
+                font-weight: 800;
+                z-index: -1;
+                color: var(--clr-gray);
+            }
+        </style>
+
     </head>
-    <body layout:fragment="body">
-<div class="row justify-content-center d-flex gap-3 mt-5">
-            <h1 class="text-center">Most popular</h1>
-            <div th:each="pokemon : ${listPokemon}" class="card mb-3" style="max-width: 450px;">
+    <body layout:fragment="body" style="background-image: url('https://www.chromethemer.com/wallpapers/chromebook-wallpapers/images/960/pokemon-chromebook-wallpaper.jpg');  background-position: center;">
+        <div class="row justify-content-center d-flex gap-3 mt-5">
+            <h1 class="text-center">Pokedex</h1>
+            <div th:each="pokemon : ${listPokemon}" class="col-sm-6 col-md-4 col-lg-3">
 
                 <div class="row g-0">
-                    <div class="col-md-4">
-                     
-                    </div>
                     <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title" th:text="${pokemon.id}"></h5>
-                            <h5 class="card-title" th:text="${pokemon.name}"></h5>
-                            <h5 class="card-title" th:text="${pokemon.Types.name}"</h5>
+                        <div class="card" style="width: 18rem;">
                             
-                            
-                            
+                            <a th:href="@{/pokemon/{name}(name = ${pokemon.name})}" class="stretched-link"></a>
+                            <img th:src="${pokemon.sprites.front_default}" class="card-img-top p-3" alt="Imagen de Pokémon" style="height: 200px; object-fit: contain;">
+                            <div class="card-body">
+                                <p class="pokemon-id-back">#025</p>
+                                <h5 class="text-capitalize" th:text="${pokemon.name}"></h5>
+                                <p class="card-text" th:text="'No. '+${pokemon.id}"></p>
+                            </div>
                         </div>
 
                     </div>

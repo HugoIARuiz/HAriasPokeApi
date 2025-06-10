@@ -1,11 +1,9 @@
 
 package com.example.digis01.PokeApi.Controller;
 
-import com.example.digis01.PokeApi.DTO.PokemonDTO;
-import com.example.digis01.PokeApi.DTO.TypesDTO;
 import com.example.digis01.PokeApi.ML.Pokemon;
 import com.example.digis01.PokeApi.ML.Result;
-import com.example.digis01.PokeApi.ML.Types;
+import com.example.digis01.PokeApi.ML.UrlPokemon;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.core.ParameterizedTypeReference;
@@ -15,7 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 @Controller
@@ -23,22 +24,23 @@ import org.springframework.web.client.RestTemplate;
 public class PokemonController {
     private RestTemplate restTemplate = new RestTemplate();
     private final String URL_BASE = "https://pokeapi.co/api/v2/pokemon";
+    
     @GetMapping
     public String Pokedex(Model model){
         
         try {
             
-            ResponseEntity<Result<PokemonDTO>> listUrlPokemon = restTemplate.exchange(URL_BASE, HttpMethod.GET,
+            ResponseEntity<Result<UrlPokemon>> listUrlPokemon = restTemplate.exchange(URL_BASE, HttpMethod.GET,
                     HttpEntity.EMPTY,
-                    new ParameterizedTypeReference<Result<PokemonDTO>>(){});
+                    new ParameterizedTypeReference<Result<UrlPokemon>>(){});
             
             if (listUrlPokemon.getStatusCode().is2xxSuccessful()) {
                 Result result = new Result();
                 result = listUrlPokemon.getBody();
-                List<PokemonDTO> urlPokemon = new ArrayList<>();
+                List<UrlPokemon> urlPokemon = new ArrayList<>();
                 urlPokemon = result.results;
                 List<Pokemon> pokemons = new ArrayList<>();
-                for(PokemonDTO urls : urlPokemon){
+                for(UrlPokemon urls : urlPokemon){
                     ResponseEntity<Pokemon> getPokemon = restTemplate.exchange(urls.getUrl(), HttpMethod.GET, 
                             HttpEntity.EMPTY, 
                             new ParameterizedTypeReference<Pokemon>(){});
@@ -46,31 +48,84 @@ public class PokemonController {
                         pokemons.add(getPokemon.getBody());
                     }
                 }
-                List<TypesDTO> urlTypes = new ArrayList<>();
-                List<Types> tipos = new ArrayList<>();
-                for(TypesDTO urls : urlTypes){
-                    ResponseEntity<Types> getTypes = restTemplate.exchange(urls.getUrl(), HttpMethod.GET, 
-                            HttpEntity.EMPTY, 
-                            new ParameterizedTypeReference<Types>(){});
-                    if(getTypes.getStatusCode().is2xxSuccessful()){
-                        tipos.add(getTypes.getBody());
-                    }
-                }
+                Pokemon pokemonTypes = new Pokemon();
+                
+                
                 model.addAttribute("listPokemon", pokemons);
-                model.addAttribute("listTypes", tipos);
+                model.addAttribute("types", pokemonTypes.types);
+//                model.addAttribute("results", listUrlPokemon.getBody());
             }
           
             
             
             
-            return "Pokedex";
+           
         } catch (Exception e) {
+            System.out.println(e.getLocalizedMessage());
         }
         
         
-        return null;
+         return "Pokedex";
+    }
+    @GetMapping("/{name}")
+    public String getByName(@PathVariable String name, Model model){
+        try{
+            ResponseEntity<Pokemon> response = restTemplate.exchange(URL_BASE + "/" + name,
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Pokemon>() {
+                    });
+            
+            if (response.getStatusCode().is2xxSuccessful()) {
+                model.addAttribute("pokemon", response.getBody());
+            }
+        }catch(HttpStatusCodeException ex){
+            return "ErrorPage";
+        }
+        return "Pokemon";
     }
     
+    @GetMapping("/pageable")
+    public String Pageable(@RequestParam String urlPage, Model model){
+        try {
+            ResponseEntity<Result<UrlPokemon>> response = restTemplate.exchange(urlPage,
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Result<UrlPokemon>>() {
+                    });
+            
+            if (response.getStatusCode().is2xxSuccessful()) {
+                Result result = new Result();
+
+                result = response.getBody();
+
+                List<UrlPokemon> url = new ArrayList<>();
+
+                url = result.results;
+
+                //Lista pokemones
+                List<Pokemon> pokemons = new ArrayList<>();
+
+                for (UrlPokemon urls : url) {
+                    ResponseEntity<Pokemon> getUniquePokemon = restTemplate.exchange(urls.getUrl(),
+                            HttpMethod.GET,
+                            HttpEntity.EMPTY,
+                            new ParameterizedTypeReference<Pokemon>() {
+                    });
+
+                    if (getUniquePokemon.getStatusCode().is2xxSuccessful()) {
+                        pokemons.add(getUniquePokemon.getBody());
+                    }
+                }
+
+                model.addAttribute("listPokemon", pokemons);
+                model.addAttribute("results", response.getBody());
+            }
+            
+        } catch (HttpStatusCodeException ex) {
+        }
+        return "Index";
+    }
     
     
 }

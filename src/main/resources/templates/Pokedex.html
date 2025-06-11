@@ -17,10 +17,27 @@
                 z-index: -1;
                 color: var(--clr-gray);
             }
+            #pagination{
+                width: max-content;
+                margin: 30px auto 0 auto;
+            }
+            #pagination .active{
+                background-color: #4caf50;
+                color: white;
+            }
+            #pokemon-container{
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+                width: 100%;
+                max-width: 1200px;
+                margin: 70px auto;
+            }
+            
         </style>
 
     </head>
-    <body layout:fragment="body" style="background-image: url('https://www.chromethemer.com/wallpapers/chromebook-wallpapers/images/960/pokemon-chromebook-wallpaper.jpg');  background-position: center;">
+    <body layout:fragment="body" style="background: #ff000d;
+background: linear-gradient(180deg,rgba(255, 0, 13, 1) 0%, rgba(0, 0, 0, 1) 51%, rgba(255, 255, 255, 1) 100%);">
         <div class="row justify-content-center d-flex gap-3 mt-5">
             <h1 class="text-center">Pokedex</h1>
             <div th:each="pokemon : ${listPokemon}" class="col-sm-6 col-md-4 col-lg-3">
@@ -28,11 +45,10 @@
                 <div class="row g-0">
                     <div class="col-md-8">
                         <div class="card" style="width: 18rem;">
-                            
+
                             <a th:href="@{/pokemon/{name}(name = ${pokemon.name})}" class="stretched-link"></a>
                             <img th:src="${pokemon.sprites.front_default}" class="card-img-top p-3" alt="Imagen de Pokémon" style="height: 200px; object-fit: contain;">
                             <div class="card-body">
-                                <p class="pokemon-id-back">#025</p>
                                 <h5 class="text-capitalize" th:text="${pokemon.name}"></h5>
                                 <p class="card-text" th:text="'No. '+${pokemon.id}"></p>
                             </div>
@@ -40,8 +56,27 @@
 
                     </div>
                 </div>
-            </div>
 
+            </div>
+            <div class="row mt-4">
+                <div class="col d-flex justify-content-center">
+                    <nav aria-label="Paginación">
+                        <ul class="pagination pagination-lg">
+                            <li class="page-item">
+                                <a class="page-link  border-light" th:if="${results.previous != null}" th:href="@{/pokemon/pageable(urlPage = ${results.previous})}" aria-label="Anterior">
+                                    <span aria-hidden="true">Anterior</span>
+                                </a>
+                            </li>
+
+                            <li class="page-item">
+                                <a class="page-link  border-light" th:href="@{/pokemon/pageable(urlPage = ${results.next})}" aria-label="Siguiente">
+                                    <span aria-hidden="true">Siguiente</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
         </div>
     </body>
 </html>

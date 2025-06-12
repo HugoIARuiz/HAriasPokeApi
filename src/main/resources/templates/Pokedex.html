@@ -32,25 +32,32 @@
                 max-width: 1200px;
                 margin: 70px auto;
             }
-            
+
         </style>
 
     </head>
     <body layout:fragment="body" style="background: #ff000d;
-background: linear-gradient(180deg,rgba(255, 0, 13, 1) 0%, rgba(0, 0, 0, 1) 51%, rgba(255, 255, 255, 1) 100%);">
+          background: linear-gradient(180deg,rgba(255, 0, 13, 1) 0%, rgba(0, 0, 0, 1) 51%, rgba(255, 255, 255, 1) 100%);">
         <div class="row justify-content-center d-flex gap-3 mt-5">
             <h1 class="text-center">Pokedex</h1>
             <div th:each="pokemon : ${listPokemon}" class="col-sm-6 col-md-4 col-lg-3">
 
                 <div class="row g-0">
                     <div class="col-md-8">
-                        <div class="card" style="width: 18rem;">
+                        <div class="card" style="width: 18rem;" >
 
                             <a th:href="@{/pokemon/{name}(name = ${pokemon.name})}" class="stretched-link"></a>
                             <img th:src="${pokemon.sprites.front_default}" class="card-img-top p-3" alt="Imagen de Pokémon" style="height: 200px; object-fit: contain;">
                             <div class="card-body">
                                 <h5 class="text-capitalize" th:text="${pokemon.name}"></h5>
                                 <p class="card-text" th:text="'No. '+${pokemon.id}"></p>
+                                <div class="btn-group rounded-pill col-3 mt-1 text-center d-flex flex-column" 
+                                     role="group" aria-label="Basic mixed styles example" th:each="pokemonType : ${pokemon.types}">
+                                    <span class="badge" 
+                                          th:style="'background: linear-gradient(180deg, ' + ${typeColors[pokemonType.type.name]} + ', rgba(0,0,0,0.7));'"
+                                          th:text="${pokemonType.type.name}">
+                                    </span>                            
+                                </div>
                             </div>
                         </div>
 

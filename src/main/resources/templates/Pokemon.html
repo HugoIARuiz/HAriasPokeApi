@@ -12,6 +12,25 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="./css/main.css">
         <style>
+            p {
+                position: relative;
+                text-align: center;
+                font-size: 72px;
+                font-weight: bold;
+
+                &::before {
+                    content: attr(content);
+                    position: absolute;
+                    inset: 0;
+                    transform: rotatex(180deg) translatey(15px);
+                    transform-origin: 50% 100%;
+                    white-space: nowrap;
+                }
+            }
+
+            div:nth-child(2) p::before {
+                mask: linear-gradient(transparent, #000);
+            }
             .favorite-btn {
                 border: none;
                 background: none;
@@ -49,10 +68,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             }
         </style>
     </head>
-    <body layout:fragment="body">
-        <div class="container mt-5 justify-content-center align-items-center ">
-            <h1 class="text-capitalize mt-3 fw-bold" th:text="${pokemon.name}+  ' No.'+${pokemon.id}">Nombre</h1>
-
+    <body layout:fragment="body" th:style="'background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('+${pokemon.sprites.other.dream_world.front_default}+');'">
+        <div class="container mt-5 justify-content-center align-items-center mb-5 ">
+            <div>
+                <p class="text-capitalize mt-3 fw-bold text-white" th:text="${pokemon.name}+  ' No.'+${pokemon.id}">Nombre</p>
+            </div>
             <div class="row">
                 <div class="col-md-4">
                     <div class="card border-primary">
@@ -63,14 +83,19 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                 </button >
                             </div>
                             <img th:src="${pokemon.sprites.front_default}" alt="Imagen de Pokémon" class="img-fluid" style="height: 180px; object-fit: contain;">
-                            <div class="row ">
-                                <div class="btn-group rounded-pill col-3 mt-1 text-center d-flex flex-column align-items-center" role="group" aria-label="Basic mixed styles example" th:each="pokemonType : ${pokemon.types}">
-                                    <span class="badge" style="background: #d9071f;
 
-                                          background: linear-gradient(180deg, rgba(217, 7, 31, 1) 19%, rgba(72, 184, 92, 1) 53%, rgba(51, 24, 8, 1) 100%);" th:text="${pokemonType.type.name}">Secondary</span>                            
+                            <div class="stats-chart">
+                                <div class="bar" th:each="stats : ${pokemon.stats}">
+                                    <h6 class="stat-name" th:text="${stats.stat.name}">Stat</h6>
+                                    <div class="progress-container">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                             th:style="'width:' + (${stats.base_stat} / 200 * 100) + '%;'"
+                                             th:text="${stats.base_stat}">
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
 
+                            </div>
                         </div>
 
                     </div>
@@ -92,41 +117,34 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                     <h3 >Experiencia</h3>
                                     <h3 class="text-capitalize mt-3 fw-bold" th:text="${pokemon.base_experience} + 'XP'"></h3>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card border-primary">
-                        <div class="card-body">
-                            <div class="stats-chart">
-                                <div class="bar" th:each="stats : ${pokemon.stats}">
-                                    <h6 class="stat-name" th:text="${stats.stat.name}">Stat</h6>
-                                    <div class="progress-container">
-                                        <div class="progress-bar progress-bar-striped progress-bar-animated"
-                                             th:style="'width:' + (${stats.base_stat} / 200 * 100) + '%;'"
-                                             th:text="${stats.base_stat}">
-                                        </div>
+                                <h3 >Tipo </h3>
+                                <div class="row ">
+                                    <div class="btn-group rounded-pill col-3 mt-1 text-center d-flex flex-column align-items-center" 
+                                         role="group" aria-label="Basic mixed styles example" th:each="pokemonType : ${pokemon.types}">
+                                        <span class="badge" 
+                                              th:style="'background: linear-gradient(180deg, ' + ${typeColors[pokemonType.type.name]} + ', rgba(0,0,0,0.7));'"
+                                              th:text="${pokemonType.type.name}">
+                                        </span>                            
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
 
-    <script>
-        function playAudio() {
-            var audio = document.getElementById('sonido');
-            if (audio.paused) {
-                audio.play();
-            } else {
-                audio.pause();
+        <script>
+            function playAudio() {
+                var audio = document.getElementById('sonido');
+                if (audio.paused) {
+                    audio.play();
+                } else {
+                    audio.pause();
+                }
             }
-        }
-        
-    </script>
-</body>
+
+        </script>
+    </body>
 </html>

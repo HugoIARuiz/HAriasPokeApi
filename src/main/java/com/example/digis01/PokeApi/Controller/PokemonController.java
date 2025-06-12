@@ -4,7 +4,9 @@ import com.example.digis01.PokeApi.ML.Pokemon;
 import com.example.digis01.PokeApi.ML.Result;
 import com.example.digis01.PokeApi.ML.UrlPokemon;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -24,6 +26,7 @@ public class PokemonController {
 
     private RestTemplate restTemplate = new RestTemplate();
     private final String URL_BASE = "https://pokeapi.co/api/v2/pokemon";
+    
 
     @GetMapping
     public String Pokedex(Model model) {
@@ -50,10 +53,28 @@ public class PokemonController {
                         pokemons.add(getPokemon.getBody());
                     }
                 }
-                Pokemon pokemonTypes = new Pokemon();
-
+                Map<String, String> typeColors = new HashMap<>();
+                typeColors.put("fire", "#FF5722");
+                typeColors.put("water", "#2196F3");
+                typeColors.put("grass", "#4CAF50");
+                typeColors.put("electric", "#FFC107");
+                typeColors.put("ice", "#00BCD4");
+                typeColors.put("fighting", "#E91E63");
+                typeColors.put("poison", "#9C27B0");
+                typeColors.put("ground", "#795548");
+                typeColors.put("psychic", "#673AB7");
+                typeColors.put("rock", "#6D4C41");
+                typeColors.put("bug", "#8BC34A");
+                typeColors.put("ghost", "#607D8B");
+                typeColors.put("dragon", "#3F51B5");
+                typeColors.put("dark", "#424242");
+                typeColors.put("steel", "#B0BEC5");
+                typeColors.put("fairy", "#F8BBD0");
+                typeColors.put("flying", "#92C5FC");
+                typeColors.put("normal", "#CDCDCD");
+                model.addAttribute("typeColors", typeColors);
                 model.addAttribute("listPokemon", pokemons);
-                model.addAttribute("types", pokemonTypes.types);
+                
                 model.addAttribute("results", listUrlPokemon.getBody());
             }
 
@@ -74,6 +95,26 @@ public class PokemonController {
             });
 
             if (response.getStatusCode().is2xxSuccessful()) {
+                Map<String, String> typeColors = new HashMap<>();
+                typeColors.put("fire", "#FF5722");
+                typeColors.put("water", "#2196F3");
+                typeColors.put("grass", "#4CAF50");
+                typeColors.put("electric", "#FFC107");
+                typeColors.put("ice", "#00BCD4");
+                typeColors.put("fighting", "#E91E63");
+                typeColors.put("poison", "#9C27B0");
+                typeColors.put("ground", "#795548");
+                typeColors.put("psychic", "#673AB7");
+                typeColors.put("rock", "#6D4C41");
+                typeColors.put("bug", "#8BC34A");
+                typeColors.put("ghost", "#607D8B");
+                typeColors.put("dragon", "#3F51B5");
+                typeColors.put("dark", "#424242");
+                typeColors.put("steel", "#B0BEC5");
+                typeColors.put("fairy", "#F8BBD0");
+                typeColors.put("flying", "#92C5FC");
+                typeColors.put("normal", "#CDCDCD");
+                model.addAttribute("typeColors", typeColors);
                 model.addAttribute("pokemon", response.getBody());
             }
         } catch (HttpStatusCodeException ex) {
@@ -109,6 +150,26 @@ public class PokemonController {
                         pokemons.add(getUniquePokemon.getBody());
                     }
                 }
+                Map<String, String> typeColors = new HashMap<>();
+                typeColors.put("fire", "#FF5722");
+                typeColors.put("water", "#2196F3");
+                typeColors.put("grass", "#4CAF50");
+                typeColors.put("electric", "#FFC107");
+                typeColors.put("ice", "#00BCD4");
+                typeColors.put("fighting", "#E91E63");
+                typeColors.put("poison", "#9C27B0");
+                typeColors.put("ground", "#795548");
+                typeColors.put("psychic", "#673AB7");
+                typeColors.put("rock", "#6D4C41");
+                typeColors.put("bug", "#8BC34A");
+                typeColors.put("ghost", "#607D8B");
+                typeColors.put("dragon", "#3F51B5");
+                typeColors.put("dark", "#424242");
+                typeColors.put("steel", "#B0BEC5");
+                typeColors.put("fairy", "#F8BBD0");
+                typeColors.put("flying", "#92C5FC");
+                typeColors.put("normal", "#CDCDCD");
+                model.addAttribute("typeColors", typeColors);
 
                 model.addAttribute("listPokemon", pokemons);
                 model.addAttribute("results", response.getBody());

@@ -1,5 +1,6 @@
 package com.example.digis01.PokeApi.ML;
 
+import com.example.digis01.PokeApi.DTO.AbilityDTO;
 import com.example.digis01.PokeApi.DTO.PokemonTypeDTO;
 import com.example.digis01.PokeApi.DTO.StatsDTO;
 import java.util.List;
@@ -22,5 +23,7 @@ public class Pokemon {
     public List<PokemonTypeDTO> types;
     public Cries cries;
     public List<StatsDTO> stats;
+    public Species species;
+    public AbilityDTO abilities;
 
 }

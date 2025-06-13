@@ -12,6 +12,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="./css/main.css">
         <style>
+
+            @import url('https://fonts.googleapis.com/css2?family=Carter+One&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Carter+One&family=Monoton&display=swap');
             p {
                 position: relative;
                 text-align: center;
@@ -66,85 +69,107 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 background-color: #3498db;
                 border-radius: 5px;
             }
+
         </style>
     </head>
-    <body layout:fragment="body" th:style="'background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('+${pokemon.sprites.other.dream_world.front_default}+');'">
+    <body layout:fragment="body" th:style="${pokemon.types.size() == 1} ?
+          'background: ' + ${typeColors[pokemon.types[0].type.name]} + ';' :
+          'background: linear-gradient(90deg, ' + ${typeColors[pokemon.types[0].type.name]} + ', ' + ${typeColors[pokemon.types[1].type.name]} + ');'">
         <div class="container mt-5 justify-content-center align-items-center mb-5 ">
             <div>
                 <p class="text-capitalize mt-3 fw-bold text-white" th:text="${pokemon.name}+  ' No.'+${pokemon.id}">Nombre</p>
             </div>
             <div class="row">
                 <div class="col-md-4">
-                    <div class="card border-primary">
+                    <div class="card text-white" style="background: rgba(0, 0, 0, 0.6);
+                         backdrop-filter: blur(5px);
+                         border-radius: 10px;
+                         padding: 20px;">
                         <div class="text-center p-4">
                             <div>
                                 <audio id="sonido" th:src="${pokemon.Cries.latest}" style="display: none;"></audio>
                                 <button onclick="playAudio()" class="favorite-btn" ><i class="bi bi-soundwave"></i>
                                 </button >
                             </div>
-                            <img th:src="${pokemon.sprites.front_default}" alt="Imagen de Pokémon" class="img-fluid" style="height: 180px; object-fit: contain;">
-
-                            <div class="stats-chart">
-                                <div class="bar" th:each="stats : ${pokemon.stats}">
-                                    <h6 class="stat-name" th:text="${stats.stat.name}">Stat</h6>
-                                    <div class="progress-container">
-                                        <div class="progress-bar progress-bar-striped progress-bar-animated"
-                                             th:style="'width:' + (${stats.base_stat} / 200 * 100) + '%;'"
-                                             th:text="${stats.base_stat}">
-                                        </div>
-                                    </div>
-                                </div>
-
+                            <div>
+                                <img th:src="${pokemon.sprites.other.dream_world.front_default}" alt="Imagen de Pokémon" class="img-fluid" style="height: 180px; object-fit: contain;">
                             </div>
+                            <h3 class="card-text" th:text="${descripcion[0].flavor_text}"></h3>
+                            
+
                         </div>
 
                     </div>
                 </div>
 
                 <div class="col-md-4">
-                    <div class="card border-primary">
+                    <div class="card text-white" style="background: rgba(0, 0, 0, 0.6);
+                         backdrop-filter: blur(5px);
+                         border-radius: 10px;
+                         padding: 20px;" >
                         <div class="card-body">
                             <div class="row mb-3">
                                 <div class="col-md-4 text-center d-flex flex-column align-items-center">
-                                    <h3 >Altura <i class="bi bi-rulers"></i></h3>
+                                    <h3 >Altura</h3>
                                     <h3 class="text-capitalize mt-3 fw-bold" th:text="${#numbers.formatDecimal(pokemon.height/10, 1, 1)} + 'm'"></h3>
                                 </div>
                                 <div class="col-md-4 text-center d-flex flex-column align-items-center">
-                                    <h3 >Peso <i class="bi bi-feather"></i></h3>
+                                    <h3 >Peso </h3>
                                     <h3 class="text-capitalize mt-3 fw-bold" th:text="${#numbers.formatDecimal(pokemon.weight/10, 1, 1)} + 'kg'"></h3>
                                 </div>
                                 <div class="col-md-4 text-center d-flex flex-column align-items-center">
                                     <h3 >Experiencia</h3>
                                     <h3 class="text-capitalize mt-3 fw-bold" th:text="${pokemon.base_experience} + 'XP'"></h3>
                                 </div>
-                                <h3 >Tipo </h3>
-                                <div class="row ">
-                                    <div class="btn-group rounded-pill col-3 mt-1 text-center d-flex flex-column align-items-center" 
-                                         role="group" aria-label="Basic mixed styles example" th:each="pokemonType : ${pokemon.types}">
-                                        <span class="badge" 
-                                              th:style="'background: linear-gradient(180deg, ' + ${typeColors[pokemonType.type.name]} + ', rgba(0,0,0,0.7));'"
-                                              th:text="${pokemonType.type.name}">
-                                        </span>                            
+                                <div class="stats-chart">
+                                    <div class="bar" th:each="stats : ${pokemon.stats}">
+                                        <h6 class="stat-name" th:text="${stats.stat.name}">Stat</h6>
+                                        <div class="progress-container">
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                                 th:style="'width:' + (${stats.base_stat} / 200 * 100) + '%;'"
+                                                 th:text="${stats.base_stat}">
+                                            </div>
+                                        </div>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <div class="col-md-4">
+                    <div class="card text-white" style="background: rgba(0, 0, 0, 0.6);
+                         backdrop-filter: blur(5px);
+                         border-radius: 10px;
+                         padding: 20px;">
+                        <div class="card-body">
+                            <h3 style="text-align: center">Tipo </h3>
+                            <div  style="text-align: center">
+                                <div class="btn-group rounded-pill col-3 mt-1 text-center  flex-column " 
+                                     role="group" aria-label="Basic mixed styles example" th:each="pokemonType : ${pokemon.types}" style="text-align: center">
+                                    <span class="badge" 
+                                          th:style="'background: linear-gradient(180deg, ' + ${typeColors[pokemonType.type.name]} + ', rgba(0,0,0,0.7));'"
+                                          th:text="${pokemonType.type.name}" >
+                                    </span>                            
+                                </div>
 
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
-        </div>
 
-        <script>
-            function playAudio() {
-                var audio = document.getElementById('sonido');
-                if (audio.paused) {
-                    audio.play();
-                } else {
-                    audio.pause();
+            <script>
+                function playAudio() {
+                    var audio = document.getElementById('sonido');
+                    if (audio.paused) {
+                        audio.play();
+                    } else {
+                        audio.pause();
+                    }
                 }
-            }
 
-        </script>
+            </script>
     </body>
 </html>

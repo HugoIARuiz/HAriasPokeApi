@@ -1,12 +1,16 @@
 package com.example.digis01.PokeApi.Controller;
 
+import com.example.digis01.PokeApi.DTO.AbilityDTO;
+import com.example.digis01.PokeApi.ML.FlavorText;
 import com.example.digis01.PokeApi.ML.Pokemon;
 import com.example.digis01.PokeApi.ML.Result;
+import com.example.digis01.PokeApi.ML.Species;
 import com.example.digis01.PokeApi.ML.UrlPokemon;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -72,11 +76,14 @@ public class PokemonController {
                 typeColors.put("fairy", "#F8BBD0");
                 typeColors.put("flying", "#92C5FC");
                 typeColors.put("normal", "#CDCDCD");
+                
                 model.addAttribute("typeColors", typeColors);
                 model.addAttribute("listPokemon", pokemons);
                 
                 model.addAttribute("results", listUrlPokemon.getBody());
+                System.out.println(typeColors);
             }
+            
 
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
@@ -93,7 +100,17 @@ public class PokemonController {
                     HttpEntity.EMPTY,
                     new ParameterizedTypeReference<Pokemon>() {
             });
-
+            ResponseEntity<Species> responseSpecies = restTemplate.exchange(response.getBody().species.getUrl(), 
+                    HttpMethod.GET, HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Species>(){});
+            ResponseEntity<AbilityDTO> responseAbility = restTemplate.exchange(response.getBody().abilities.ability.getUrl(), 
+                    HttpMethod.GET, HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<AbilityDTO>(){});
+            Species species = new Species();
+            species = responseSpecies.getBody();
+            List<FlavorText> descripcion = new ArrayList<>();
+            descripcion = species.flavor_text_entries.stream().map(t -> (FlavorText) t ).filter(t -> t.language.getName().equals("es")).collect(Collectors.toList());
+            
             if (response.getStatusCode().is2xxSuccessful()) {
                 Map<String, String> typeColors = new HashMap<>();
                 typeColors.put("fire", "#FF5722");
@@ -116,7 +133,9 @@ public class PokemonController {
                 typeColors.put("normal", "#CDCDCD");
                 model.addAttribute("typeColors", typeColors);
                 model.addAttribute("pokemon", response.getBody());
+                model.addAttribute("descripcion", descripcion);
             }
+            
         } catch (HttpStatusCodeException ex) {
             return "ErrorPage";
         }

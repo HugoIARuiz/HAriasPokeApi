@@ -7,7 +7,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Ability {
-    private String name;
-   private String url;
+public class AbilitySlot {
+    private int slot;
+    public Ability ability;
+    
 }

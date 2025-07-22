@@ -1,10 +1,13 @@
 package com.example.digis01.PokeApi.Controller;
 
-import com.example.digis01.PokeApi.DTO.AbilityDTO;
+import com.example.digis01.PokeApi.DTO.PokemonTypeDTO;
+import com.example.digis01.PokeApi.ML.AbilityResponse;
+import com.example.digis01.PokeApi.ML.AbilitySlot;
 import com.example.digis01.PokeApi.ML.FlavorText;
 import com.example.digis01.PokeApi.ML.Pokemon;
 import com.example.digis01.PokeApi.ML.Result;
 import com.example.digis01.PokeApi.ML.Species;
+import com.example.digis01.PokeApi.ML.TypeResponse;
 import com.example.digis01.PokeApi.ML.UrlPokemon;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +33,6 @@ public class PokemonController {
 
     private RestTemplate restTemplate = new RestTemplate();
     private final String URL_BASE = "https://pokeapi.co/api/v2/pokemon";
-    
 
     @GetMapping
     public String Pokedex(Model model) {
@@ -76,14 +78,13 @@ public class PokemonController {
                 typeColors.put("fairy", "#F8BBD0");
                 typeColors.put("flying", "#92C5FC");
                 typeColors.put("normal", "#CDCDCD");
-                
+
                 model.addAttribute("typeColors", typeColors);
                 model.addAttribute("listPokemon", pokemons);
-                
+
                 model.addAttribute("results", listUrlPokemon.getBody());
                 System.out.println(typeColors);
             }
-            
 
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
@@ -100,17 +101,49 @@ public class PokemonController {
                     HttpEntity.EMPTY,
                     new ParameterizedTypeReference<Pokemon>() {
             });
-            ResponseEntity<Species> responseSpecies = restTemplate.exchange(response.getBody().species.getUrl(), 
+            ResponseEntity<Species> responseSpecies = restTemplate.exchange(response.getBody().species.getUrl(),
                     HttpMethod.GET, HttpEntity.EMPTY,
-                    new ParameterizedTypeReference<Species>(){});
-            ResponseEntity<AbilityDTO> responseAbility = restTemplate.exchange(response.getBody().abilities.ability.getUrl(), 
-                    HttpMethod.GET, HttpEntity.EMPTY,
-                    new ParameterizedTypeReference<AbilityDTO>(){});
+                    new ParameterizedTypeReference<Species>() {
+            });
+            
+
             Species species = new Species();
             species = responseSpecies.getBody();
             List<FlavorText> descripcion = new ArrayList<>();
-            descripcion = species.flavor_text_entries.stream().map(t -> (FlavorText) t ).filter(t -> t.language.getName().equals("es")).collect(Collectors.toList());
-            
+            descripcion = species.flavor_text_entries.stream().map(t -> (FlavorText) t).filter(t -> t.language.getName().equals("es")).collect(Collectors.toList());
+
+            List<String> habilidadesEnEspanol = new ArrayList<>();
+            List<String> descripcionEspanol = new ArrayList<>();
+            List<String> tipoEspanol = new ArrayList<>();
+             Pokemon pokemon = response.getBody();
+            for (AbilitySlot abilitySlot : pokemon.getAbilities()) {
+                ResponseEntity<AbilityResponse> abilityResponse = restTemplate.exchange(
+                        abilitySlot.getAbility().getUrl(),
+                        HttpMethod.GET, HttpEntity.EMPTY,
+                        new ParameterizedTypeReference<AbilityResponse>() {
+                });
+
+                AbilityResponse ability = abilityResponse.getBody();
+                ability.getNames().stream()
+                        .filter(nameEntry -> "es".equals(nameEntry.getLanguage().getName()))
+                        .findFirst()
+                        .ifPresent(nameEntry -> habilidadesEnEspanol.add(nameEntry.getName()));
+                ability.getFlavor_text_entries().stream()
+                        .filter(descripcionAbility -> "es".equals(descripcionAbility.getLanguage().getName()))
+                        .findFirst()
+                        .ifPresent(descripcionAbility -> descripcionEspanol.add(descripcionAbility.getFlavor_text())); 
+            }
+            for (PokemonTypeDTO pokemonType : pokemon.getTypes()) {
+                ResponseEntity<TypeResponse> typeResponse = restTemplate.exchange(pokemonType.getType().getUrl()
+                        , HttpMethod.GET, HttpEntity.EMPTY
+                        , new ParameterizedTypeReference<TypeResponse>() {});
+                TypeResponse type = typeResponse.getBody();
+                type.getNames().stream()
+                        .filter(typeEntry -> "es".equals(typeEntry.getLanguage().getName()))
+                        .findFirst()
+                        .ifPresent(typeEntry -> tipoEspanol.add(typeEntry.getName()));
+            }
+
             if (response.getStatusCode().is2xxSuccessful()) {
                 Map<String, String> typeColors = new HashMap<>();
                 typeColors.put("fire", "#FF5722");
@@ -134,8 +167,11 @@ public class PokemonController {
                 model.addAttribute("typeColors", typeColors);
                 model.addAttribute("pokemon", response.getBody());
                 model.addAttribute("descripcion", descripcion);
+                model.addAttribute("habilidades", habilidadesEnEspanol);
+                model.addAttribute("descHabilidades", descripcionEspanol);
+                model.addAttribute("tipoEsp", tipoEspanol);
             }
-            
+
         } catch (HttpStatusCodeException ex) {
             return "ErrorPage";
         }
